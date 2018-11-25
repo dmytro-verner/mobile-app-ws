@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .idea/
 .settings/
 *.iml
@@ -6,3 +7,28 @@
 log/
 target/
 project/
+=======
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+>>>>>>> e96051eab4da3e22bf36c230ca19bdba4cc3650b
