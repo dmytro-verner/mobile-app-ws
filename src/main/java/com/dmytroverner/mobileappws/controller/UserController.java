@@ -1,9 +1,7 @@
 package com.dmytroverner.mobileappws.controller;
 
 import com.dmytroverner.mobileappws.dto.UserDto;
-import com.dmytroverner.mobileappws.exceptions.UserServiceException;
 import com.dmytroverner.mobileappws.model.request.UserDetailsRequest;
-import com.dmytroverner.mobileappws.model.response.ErrorMessages;
 import com.dmytroverner.mobileappws.model.response.UserDetailsResponse;
 import com.dmytroverner.mobileappws.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -19,7 +17,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(path="/{id}",
-        produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse getUser(@PathVariable("id") String userId) {
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
 
@@ -33,9 +32,6 @@ public class UserController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse createUser(@RequestBody UserDetailsRequest userDetailsRequest) {
-        if (userDetailsRequest.getFirstName().isEmpty())
-            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
 
         UserDto userDto = new UserDto();
@@ -47,9 +43,19 @@ public class UserController {
         return userDetailsResponse;
     }
 
-    @PutMapping
-    public String putUser() {
-        return "put was called";
+    @PutMapping(path="/{id}",
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public UserDetailsResponse putUser(@PathVariable("id") String userId, @RequestBody UserDetailsRequest userDetailsRequest) {
+        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetailsRequest, userDto);
+
+        UserDto updatedUser = userService.updateUser(userId, userDto);
+        BeanUtils.copyProperties(updatedUser, userDetailsResponse);
+
+        return userDetailsResponse;
     }
 
     @DeleteMapping

@@ -3,6 +3,7 @@ package com.dmytroverner.mobileappws.security;
 import com.dmytroverner.mobileappws.SpringApplicationContext;
 import com.dmytroverner.mobileappws.dto.UserDto;
 import com.dmytroverner.mobileappws.model.request.UserLoginRequest;
+import com.dmytroverner.mobileappws.model.response.ErrorMessages;
 import com.dmytroverner.mobileappws.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
@@ -44,7 +45,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                     )
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
         }
     }
 
