@@ -1,8 +1,9 @@
 package com.dmytroverner.mobileappws.controller;
 
 import com.dmytroverner.mobileappws.dto.UserDto;
-import com.dmytroverner.mobileappws.entity.UserEntity;
+import com.dmytroverner.mobileappws.exceptions.UserServiceException;
 import com.dmytroverner.mobileappws.model.request.UserDetailsRequest;
+import com.dmytroverner.mobileappws.model.response.ErrorMessages;
 import com.dmytroverner.mobileappws.model.response.UserDetailsResponse;
 import com.dmytroverner.mobileappws.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +33,9 @@ public class UserController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse createUser(@RequestBody UserDetailsRequest userDetailsRequest) {
+        if (userDetailsRequest.getFirstName().isEmpty())
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
 
         UserDto userDto = new UserDto();
