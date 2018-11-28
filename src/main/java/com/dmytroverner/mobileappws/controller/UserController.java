@@ -2,6 +2,8 @@ package com.dmytroverner.mobileappws.controller;
 
 import com.dmytroverner.mobileappws.dto.UserDto;
 import com.dmytroverner.mobileappws.model.request.UserDetailsRequest;
+import com.dmytroverner.mobileappws.model.response.OperationStatusModel;
+import com.dmytroverner.mobileappws.model.response.RequestOperationStatus;
 import com.dmytroverner.mobileappws.model.response.UserDetailsResponse;
 import com.dmytroverner.mobileappws.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -58,8 +60,15 @@ public class UserController {
         return userDetailsResponse;
     }
 
-    @DeleteMapping
-    public String deleteUser() {
-        return "delete was called";
+    @DeleteMapping(path = "/{id}",
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public OperationStatusModel deleteUser(@PathVariable("id") String userId) {
+        OperationStatusModel operationStatusModel = new OperationStatusModel();
+        operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
+
+        userService.delete(userId);
+
+        operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return operationStatusModel;
     }
 }
