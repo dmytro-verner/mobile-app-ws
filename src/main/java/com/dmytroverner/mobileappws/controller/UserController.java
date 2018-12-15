@@ -1,17 +1,21 @@
 package com.dmytroverner.mobileappws.controller;
 
+import com.dmytroverner.mobileappws.dto.AddressDto;
 import com.dmytroverner.mobileappws.dto.UserDto;
 import com.dmytroverner.mobileappws.model.request.UserDetailsRequestModel;
+import com.dmytroverner.mobileappws.model.response.AddressResponse;
 import com.dmytroverner.mobileappws.model.response.OperationStatusModel;
 import com.dmytroverner.mobileappws.model.response.RequestOperationStatus;
 import com.dmytroverner.mobileappws.model.response.UserDetailsResponse;
+import com.dmytroverner.mobileappws.service.AddressService;
 import com.dmytroverner.mobileappws.service.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +24,14 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AddressService addressService;
 
     private ModelMapper modelMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AddressService addressService) {
         this.userService = userService;
+        this.addressService = addressService;
 
         modelMapper = new ModelMapper();
     }
@@ -85,5 +91,20 @@ public class UserController {
         }
 
         return returnList;
+    }
+
+    @GetMapping(path="/{id}/addresses",
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public List<AddressResponse> getAddresses(@PathVariable("id") String userId) {
+        List<AddressResponse> result = new ArrayList<>();
+
+        List<AddressDto> addressesDto = addressService.getAddresses(userId);
+
+        if (addressesDto != null && !addressesDto.isEmpty()) {
+            Type listType = new TypeToken<List<AddressResponse>>() {}.getType();
+            result = modelMapper.map(addressesDto, listType);
+        }
+        return result;
     }
 }
