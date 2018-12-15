@@ -1,11 +1,12 @@
 package com.dmytroverner.mobileappws.controller;
 
 import com.dmytroverner.mobileappws.dto.UserDto;
-import com.dmytroverner.mobileappws.model.request.UserDetailsRequest;
+import com.dmytroverner.mobileappws.model.request.UserDetailsRequestModel;
 import com.dmytroverner.mobileappws.model.response.OperationStatusModel;
 import com.dmytroverner.mobileappws.model.response.RequestOperationStatus;
 import com.dmytroverner.mobileappws.model.response.UserDetailsResponse;
 import com.dmytroverner.mobileappws.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -36,26 +37,23 @@ public class UserController {
     @PostMapping(
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public UserDetailsResponse createUser(@RequestBody UserDetailsRequest userDetailsRequest) {
-        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetailsRequest, userDto);
+    public UserDetailsResponse createUser(@RequestBody UserDetailsRequestModel userDetailsRequestModel) {
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetailsRequestModel, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
-        BeanUtils.copyProperties(createdUser, userDetailsResponse);
 
-        return userDetailsResponse;
+        return modelMapper.map(createdUser, UserDetailsResponse.class);
     }
 
     @PutMapping(path="/{id}",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public UserDetailsResponse putUser(@PathVariable("id") String userId, @RequestBody UserDetailsRequest userDetailsRequest) {
+    public UserDetailsResponse putUser(@PathVariable("id") String userId, @RequestBody UserDetailsRequestModel userDetailsRequestModel) {
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
 
         UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetailsRequest, userDto);
+        BeanUtils.copyProperties(userDetailsRequestModel, userDto);
 
         UserDto updatedUser = userService.updateUser(userId, userDto);
         BeanUtils.copyProperties(updatedUser, userDetailsResponse);

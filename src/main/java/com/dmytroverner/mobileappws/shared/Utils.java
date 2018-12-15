@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Component
 public class Utils {
-    public String generateUUID() {
+    public static String generateUUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }

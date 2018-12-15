@@ -1,6 +1,6 @@
 package com.dmytroverner.mobileappws.model.request;
 
-public class UserLoginRequest {
+public class UserLoginRequestModel {
     private String email;
     private String password;
 

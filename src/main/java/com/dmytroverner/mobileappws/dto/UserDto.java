@@ -1,6 +1,7 @@
 package com.dmytroverner.mobileappws.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDto implements Serializable {
     private static final long serialVersionUID = -3245997946072035681L;
@@ -13,6 +14,7 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean getEmailVerificationStatus = false;
+    private List<AddressDto> addresses;
 
     public long getId() {
         return id;
@@ -84,5 +86,13 @@ public class UserDto implements Serializable {
 
     public void setGetEmailVerificationStatus(Boolean getEmailVerificationStatus) {
         this.getEmailVerificationStatus = getEmailVerificationStatus;
+    }
+
+    public List<AddressDto> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressDto> addresses) {
+        this.addresses = addresses;
     }
 }

@@ -2,7 +2,7 @@ package com.dmytroverner.mobileappws.security;
 
 import com.dmytroverner.mobileappws.SpringApplicationContext;
 import com.dmytroverner.mobileappws.dto.UserDto;
-import com.dmytroverner.mobileappws.model.request.UserLoginRequest;
+import com.dmytroverner.mobileappws.model.request.UserLoginRequestModel;
 import com.dmytroverner.mobileappws.model.response.ErrorMessages;
 import com.dmytroverner.mobileappws.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,8 +34,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                HttpServletResponse response) throws AuthenticationException {
         try {
-            UserLoginRequest credentials = new ObjectMapper()
-                    .readValue(request.getInputStream(), UserLoginRequest.class);
+            UserLoginRequestModel credentials = new ObjectMapper()
+                    .readValue(request.getInputStream(), UserLoginRequestModel.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
