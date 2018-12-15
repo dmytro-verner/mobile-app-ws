@@ -19,26 +19,30 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    private final UserService userService;
+
+    private ModelMapper modelMapper;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+
+        modelMapper = new ModelMapper();
+    }
 
     @GetMapping(path="/{id}",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse getUser(@PathVariable("id") String userId) {
-        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-
         UserDto userDto = userService.getUserByUserId(userId);
 
-        BeanUtils.copyProperties(userDto, userDetailsResponse);
-        return userDetailsResponse;
+        return modelMapper.map(userDto, UserDetailsResponse.class);
     }
 
     @PostMapping(
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse createUser(@RequestBody UserDetailsRequestModel userDetailsRequestModel) {
-        ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetailsRequestModel, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
@@ -50,15 +54,11 @@ public class UserController {
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     public UserDetailsResponse putUser(@PathVariable("id") String userId, @RequestBody UserDetailsRequestModel userDetailsRequestModel) {
-        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetailsRequestModel, userDto);
+        UserDto userDto = modelMapper.map(userDetailsRequestModel, UserDto.class);
 
         UserDto updatedUser = userService.updateUser(userId, userDto);
-        BeanUtils.copyProperties(updatedUser, userDetailsResponse);
 
-        return userDetailsResponse;
+        return modelMapper.map(updatedUser, UserDetailsResponse.class);
     }
 
     @DeleteMapping(path = "/{id}",
@@ -80,8 +80,7 @@ public class UserController {
 
         List<UserDto> users = userService.getUsers(page, limit);
         for (UserDto userDto : users) {
-            UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
-            BeanUtils.copyProperties(userDto, userDetailsResponse);
+            UserDetailsResponse userDetailsResponse = modelMapper.map(userDto, UserDetailsResponse.class);
             returnList.add(userDetailsResponse);
         }
 
