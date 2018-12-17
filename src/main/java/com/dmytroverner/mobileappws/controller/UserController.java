@@ -36,10 +36,10 @@ public class UserController {
         modelMapper = new ModelMapper();
     }
 
-    @GetMapping(path="/{id}",
+    @GetMapping(path="/{userId}",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public UserDetailsResponse getUser(@PathVariable("id") String userId) {
+    public UserDetailsResponse getUser(@PathVariable("userId") String userId) {
         UserDto userDto = userService.getUserByUserId(userId);
 
         return modelMapper.map(userDto, UserDetailsResponse.class);
@@ -56,10 +56,10 @@ public class UserController {
         return modelMapper.map(createdUser, UserDetailsResponse.class);
     }
 
-    @PutMapping(path="/{id}",
+    @PutMapping(path="/{userId}",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public UserDetailsResponse putUser(@PathVariable("id") String userId, @RequestBody UserDetailsRequestModel userDetailsRequestModel) {
+    public UserDetailsResponse putUser(@PathVariable("userId") String userId, @RequestBody UserDetailsRequestModel userDetailsRequestModel) {
         UserDto userDto = modelMapper.map(userDetailsRequestModel, UserDto.class);
 
         UserDto updatedUser = userService.updateUser(userId, userDto);
@@ -67,9 +67,9 @@ public class UserController {
         return modelMapper.map(updatedUser, UserDetailsResponse.class);
     }
 
-    @DeleteMapping(path = "/{id}",
+    @DeleteMapping(path = "/{userId}",
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public OperationStatusModel deleteUser(@PathVariable("id") String userId) {
+    public OperationStatusModel deleteUser(@PathVariable("userId") String userId) {
         OperationStatusModel operationStatusModel = new OperationStatusModel();
         operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
 
@@ -93,10 +93,10 @@ public class UserController {
         return returnList;
     }
 
-    @GetMapping(path="/{id}/addresses",
+    @GetMapping(path="/{userId}/addresses",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public List<AddressResponse> getAddresses(@PathVariable("id") String userId) {
+    public List<AddressResponse> getUserAddresses(@PathVariable("userId") String userId) {
         List<AddressResponse> result = new ArrayList<>();
 
         List<AddressDto> addressesDto = addressService.getAddresses(userId);
@@ -106,5 +106,16 @@ public class UserController {
             result = modelMapper.map(addressesDto, listType);
         }
         return result;
+    }
+
+    @GetMapping(path="/{userId}/addresses/{addressId}",
+            consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    public AddressResponse getUserAddress(@PathVariable("addressId") String addressId) {
+        AddressDto address = addressService.getAddress(addressId);
+        if (address != null) {
+            return modelMapper.map(address, AddressResponse.class);
+        }
+        return null;
     }
 }
