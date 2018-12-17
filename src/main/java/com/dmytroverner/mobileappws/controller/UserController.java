@@ -12,12 +12,15 @@ import com.dmytroverner.mobileappws.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/users")
@@ -111,11 +114,22 @@ public class UserController {
     @GetMapping(path="/{userId}/addresses/{addressId}",
             consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    public AddressResponse getUserAddress(@PathVariable("addressId") String addressId) {
+    public AddressResponse getUserAddress(@PathVariable("userId") String userId,
+                                          @PathVariable("addressId") String addressId) {
         AddressDto address = addressService.getAddress(addressId);
+
+        Link addressLink = linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId).withSelfRel();
+        Link userLink = linkTo(UserController.class).slash(userId).withRel("user");
+        Link addressesLink = linkTo(UserController.class).slash(userId).slash("addresses").withRel("addresses");
+
+        AddressResponse addressResponse = new AddressResponse();
         if (address != null) {
-            return modelMapper.map(address, AddressResponse.class);
+            addressResponse = modelMapper.map(address, AddressResponse.class);
         }
-        return null;
+        addressResponse.add(addressLink);
+        addressResponse.add(userLink);
+        addressResponse.add(addressesLink);
+
+        return addressResponse;
     }
 }

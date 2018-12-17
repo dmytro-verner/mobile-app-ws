@@ -1,6 +1,8 @@
 package com.dmytroverner.mobileappws.model.response;
 
-public class AddressResponse {
+import org.springframework.hateoas.ResourceSupport;
+
+public class AddressResponse extends ResourceSupport {
     private String addressId;
     private String city;
     private String country;
