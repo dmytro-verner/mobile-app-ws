@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private Utils utils;
+
     @Override
     public UserDto createUser(UserDto userDto) {
         UserEntity userEntity = userRepository.findByEmail(userDto.getEmail());
@@ -42,7 +45,7 @@ public class UserServiceImpl implements UserService {
         IntStream.range(0, userDto.getAddresses().size()).forEach(i -> {
             AddressDto address = userDto.getAddresses().get(i);
             address.setUserDetails(userDto);
-            address.setAddressId(Utils.generateUUID());
+            address.setAddressId(utils.generateUUID());
             userDto.getAddresses().set(i, address);
         });
 
@@ -50,7 +53,7 @@ public class UserServiceImpl implements UserService {
         userEntity = modelMapper.map(userDto, UserEntity.class);
 
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        userEntity.setUserId(Utils.generateUUID());
+        userEntity.setUserId(utils.generateUUID());
 
         UserEntity storedUserDetails = userRepository.save(userEntity);
 
