@@ -4,6 +4,7 @@ import com.dmytroverner.mobileappws.dto.AddressDto;
 import com.dmytroverner.mobileappws.dto.UserDto;
 import com.dmytroverner.mobileappws.entity.AddressEntity;
 import com.dmytroverner.mobileappws.entity.UserEntity;
+import com.dmytroverner.mobileappws.exceptions.UserServiceException;
 import com.dmytroverner.mobileappws.repository.UserRepository;
 import com.dmytroverner.mobileappws.service.impl.UserServiceImpl;
 import com.dmytroverner.mobileappws.shared.Utils;
@@ -101,6 +102,17 @@ public class UserServiceImplTest {
         verify(utils, atLeast(2)).generateUUID();
         verify(bCryptPasswordEncoder).encode(PASSWORD);
         verify(userRepository).save(any(UserEntity.class));
+    }
+
+    @Test
+    public void attemptToCreateUserWithExistingEmailThrowsUserServiceException() {
+        when(userRepository.findByEmail(anyString())).thenReturn(storedUserEntity);
+        UserDto userDto = new UserDto();
+        userDto.setAddresses(getAddressesDto());
+        userDto.setEmail(EMAIL);
+        userDto.setPassword(PASSWORD);
+
+        assertThrows(UserServiceException.class, () -> userService.createUser(userDto));
     }
 
     private List<AddressDto> getAddressesDto() {
